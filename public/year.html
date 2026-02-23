@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Year Mode</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+body{
+  font-family:Montserrat,sans-serif;
+  text-align:center;
+  padding-top:40px;
+  background:#111;
+  color:white;
+}
+button{
+  padding:14px 22px;
+  font-size:18px;
+  margin:10px;
+  border-radius:10px;
+  border:none;
+  cursor:pointer;
+}
+</style>
+</head>
+<body>
+
+<h1 id="title">Loading...</h1>
+
+<button id="play">Play Song</button>
+<button id="reveal" style="display:none;">Reveal</button>
+
+<h2 id="info"></h2>
+
+<script src="https://sdk.scdn.co/spotify-player.js"></script>
+
+<script>
+  
+  const urlParams = new URLSearchParams(window.location.search);
+  const token = urlParams.get("access_token");
+  const year=urlParams.get("y");
+  if(!token){
+  location.href = "/login";
+}
+
+const title=document.getElementById("title");
+const playBtn=document.getElementById("play");
+const revealBtn=document.getElementById("reveal");
+const info=document.getElementById("info");
+
+title.innerText="Year "+year;
+
+let player;
+let deviceId;
+let song;
+
+/* PLAYER */
+window.onSpotifyWebPlaybackSDKReady=()=>{
+ player=new Spotify.Player({
+  name:"Year Player",
+  getOAuthToken:cb=>cb(token)
+ });
+
+ player.addListener("ready",async({device_id})=>{
+  deviceId=device_id;
+
+  await fetch("https://api.spotify.com/v1/me/player",{
+   method:"PUT",
+   headers:{
+    "Content-Type":"application/json",
+    "Authorization":"Bearer "+token
+   },
+   body:JSON.stringify({device_ids:[device_id]})
+  });
+ });
+
+ player.connect();
+};
+
+/* PLAY */
+playBtn.onclick = async () => {
+
+  if(!deviceId){
+    alert("Player still loading — wait 1 second and try again");
+    return;
+  }
+
+  const res = await fetch(`/random-song-year?year=${year}`);
+  song = await res.json();
+
+  if(!song){
+    info.innerText="No song for this year.";
+    return;
+  }
+
+  const playRes = await fetch(
+    `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`,
+    {
+      method:"PUT",
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization":"Bearer "+token
+      },
+      body:JSON.stringify({
+        uris:[song.spotify_uri]
+      })
+    }
+  );
+
+  console.log("PLAY STATUS:",playRes.status);
+
+  revealBtn.style.display="inline";
+};
+
+/* REVEAL */
+revealBtn.onclick=()=>{
+ info.innerHTML=`
+ ${song.title} — ${song.artist}
+ `;
+};
+</script>
+
+</body>
+</html>

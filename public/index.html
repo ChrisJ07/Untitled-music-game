@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <title>Untitled music game</title>
+</head>
+
+<body>
+<div class="category-dropdown">
+  <button id="categoryBtn">Select Categories ▼</button>
+  <div id="categoryList" class="dropdown-content">
+  </div>
+</div>
+<div class="container">
+  <h1>Untitled music game</h1>
+  
+  
+  <button id="login">Login with Spotify</button>
+  <button id="play" style="display:none;">Play Random Song</button>
+  <button id="stopBtn" style="display:none;">Stop</button>
+  <button id="reveal" style="display:none;">Reveal</button>
+  
+  <div id="player"></div>
+  <h2 id="info"></h2>
+  
+  
+  <script src="https://sdk.scdn.co/spotify-player.js"></script>
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const token = urlParams.get("access_token");
+  
+  const loginBtn = document.getElementById("login");
+  const checked = [...document.querySelectorAll("#categories input:checked")]
+  .map(x=>x.value)
+  .join(",");
+  
+  const revealBtn = document.getElementById("reveal");
+  const stopBtn = document.getElementById("stopBtn");
+  const playBtn = document.getElementById("play");
+  const info = document.getElementById("info");
+  const categoryBtn = document.getElementById("categoryBtn");
+  const categoryList = document.getElementById("categoryList");
+  const dropdown = document.querySelector(".category-dropdown");
+  
+  let deviceId = null;
+  let player = null;
+  let currentSong = null;
+  let stopTimer = null;
+  
+  /* LOGIN */
+  if (!token) {
+    loginBtn.onclick = () => window.location = "/login";
+  } else {
+    loginBtn.style.display = "none";
+    playBtn.style.display = "inline-block";
+  }
+
+
+async function loadCategories(){
+  const res = await fetch("/categories");
+  const cats = await res.json();
+
+categoryList.innerHTML = cats.map(c => `
+  <label class="cat-option">
+    <input type="checkbox" value="${c.id}" checked>
+    ${c.name} (${c.count})
+  </label>
+`).join("");
+}
+
+// Toggle dropdown visibility
+categoryBtn.onclick = () => {
+  document.querySelector(".category-dropdown").classList.toggle("show");
+};
+
+// Close dropdown if clicked outside
+document.addEventListener("click", (e) => {
+  if (!dropdown.contains(e.target)) {
+    dropdown.classList.remove("show");
+  }
+});
+
+// Get checked category IDs
+function getCheckedCategories(){
+  return [...document.querySelectorAll("#categoryList input:checked")]
+           .map(x => x.value)
+           .join(",");
+}
+
+// Load categories on page load
+loadCategories();
+  
+  /* SPOTIFY PLAYER */
+window.onSpotifyWebPlaybackSDKReady = () => {
+
+  console.log("SDK READY");
+
+  player = new Spotify.Player({
+    name: "Hitster Game Player",
+    getOAuthToken: cb => cb(token),
+    volume: 0.8
+  });
+
+  player.addListener("ready", async ({ device_id }) => {
+    console.log("DEVICE READY:", device_id);
+    deviceId = device_id;
+
+    // transfer playback to browser player
+    await fetch("https://api.spotify.com/v1/me/player", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      },
+      body: JSON.stringify({
+        device_ids: [device_id],
+        play: false
+      })
+    });
+
+    console.log("Playback transferred");
+  });
+
+  player.addListener("initialization_error", e => console.error(e));
+  player.addListener("authentication_error", e => console.error(e));
+  player.addListener("account_error", e => console.error(e));
+  player.addListener("playback_error", e => console.error(e));
+
+  player.connect();
+};
+
+
+  
+  /* RANDOM SONG */
+async function getRandomSong() {
+
+  const checked = [...document.querySelectorAll("#categoryList input:checked")]
+    .map(x => x.value)
+    .join(",");
+
+  const res = await fetch(`/random-song?cats=${checked}`);
+
+  if(!res.ok){
+    info.innerText="No songs found.";
+    return null;
+  }
+
+  const song = await res.json();
+  console.log("SONG:", song);
+  return song;
+}
+
+function startTimer() {
+  clearTimeout(stopTimer);
+  stopTimer = setTimeout(async () => {
+    await fetch(`https://api.spotify.com/v1/me/player/pause?device_id=${deviceId}`, {
+      method: "PUT",
+      headers: { Authorization: "Bearer " + token }
+    });
+  }, 30000);
+}
+/*stopbtn*/
+stopBtn.onclick = async () => {
+  clearTimeout(stopTimer); // stop the auto-pause timer
+  if (!deviceId) return;
+  
+  // Pause the song immediately
+  await fetch(`https://api.spotify.com/v1/me/player/pause?device_id=${deviceId}`, {
+    method: "PUT",
+    headers: { Authorization: "Bearer " + token }
+  });
+  
+  info.innerText = "Paused!";
+};
+
+/*revealbtn*/
+revealBtn.onclick = () => {
+  if (!currentSong) {
+    info.innerText = "Play a song first!";
+    return;
+  }
+
+  info.innerHTML = `
+    ${currentSong.title} — ${currentSong.artist}<br>
+    Year: ${currentSong.year}
+  `;
+};
+
+/* PLAY */
+playBtn.onclick = async () => {
+
+  console.log("PLAY CLICKED");
+
+  if(!deviceId){
+    alert("Player not ready yet");
+    return;
+  }
+
+  const song = await getRandomSong();
+  console.log("SONG:", song);
+
+  if(!song){
+    alert("No song returned from server");
+    return;
+  }
+
+  currentSong = song;
+
+  const res = await fetch(
+    `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`,
+    {
+      method:"PUT",
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization":"Bearer "+token
+      },
+      body:JSON.stringify({
+        uris:[song.spotify_uri],
+        position_ms:30000
+      })
+    }
+  );
+
+  console.log("PLAY STATUS:", res.status);
+
+  startTimer();
+
+  info.innerText="Guess the year!";
+  stopBtn.style.display="inline";
+  revealBtn.style.display="inline";
+};
+</script>
+
+
+</div>
+</body>
+</html>

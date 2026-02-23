@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Add Song</title>
+</head>
+<body>
+  <h2>Add Song</h2>
+
+  Title: <input id="title"><br><br>
+  Artist: <input id="artist"><br><br>
+  Year: <input id="year"><br><br>
+  Spotify URI: <input id="uri"><br><br>
+
+  <button onclick="addSong()">Add Song</button>
+
+  <script>
+    async function addSong() {
+      await fetch("/add-song", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: title.value,
+          artist: artist.value,
+          year: year.value,
+          spotify_uri: uri.value
+        })
+      });
+
+      alert("Song added!");
+    }
+  </script>
+</body>
+</html>

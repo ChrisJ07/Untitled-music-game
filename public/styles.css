@@ -1,0 +1,141 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  user-select: none;
+  font-family: 'Montserrat', sans-serif;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* Clean smooth gradient */
+  background: linear-gradient(135deg, #1DB954, #191414);
+  background-attachment: fixed;
+
+  color: white;
+}
+
+.container {
+  user-select: none;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 50px;
+  border-radius: 20px;
+  width: 400px;
+  backdrop-filter: blur(10px);
+}
+
+h1 {
+  user-select: none;
+  margin-bottom: 30px;
+  font-size: 36px;
+}
+
+button {
+  user-select: none;
+  background: white;
+  color: #191414;
+  border: none;
+  padding: 12px 25px;
+  margin: 8px;
+  border-radius: 40px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+#revealInfo {
+  margin-top: 25px;
+  font-size: 20px;
+}
+
+.song-title {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.artist-name {
+  font-size: 18px;
+  opacity: 0.8;
+  margin-top: 5px;
+}
+
+.category-dropdown {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1000;
+  font-family: 'Montserrat', sans-serif;
+}
+
+#categoryBtn {
+  background-color: #1db954;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#categoryBtn:hover {
+  background-color: #17a44c;
+}
+
+.category-dropdown{
+  user-select: none;
+  position:absolute;
+  top:15px;
+  left:15px;
+}
+
+.dropdown-content{
+  display:none;
+  position:absolute;
+  background:#17a44c;
+  padding:10px;
+  border-radius:10px;
+  box-shadow:0 5px 15px rgba(0,0,0,0.2);
+  opacity:0;
+  transform:translateY(-10px);
+  transition:.2s ease;
+}
+.dropdown-content label{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:4px 10px;
+  cursor:pointer;
+  white-space:nowrap;
+}
+
+.dropdown-content input{
+  margin:0;
+}
+
+.category-dropdown.show .dropdown-content{
+  display:block;
+  opacity:1;
+  transform:translateY(0);
+}
+.cat-option{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+.cat-option input{
+  margin:0;
+}
+.cat-option{
+  font-weight:500;
+}
+.cat-option span{
+  opacity:.6;
+}
