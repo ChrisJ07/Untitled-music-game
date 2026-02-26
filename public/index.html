@@ -1,193 +1,239 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <title>Untitled music game</title>
+</head>
 
-body {
-  user-select: none;
-  font-family: 'Montserrat', sans-serif;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  /* Background */
-  background: linear-gradient(135deg, #1DB954, #191414);
-  background-attachment: fixed;
-
-  color: white;
-}
-
-/* =========================
-   CONTAINER
-========================= */
-
-/* Desktop = original fixed look */
-.container {
-  user-select: none;
-  text-align: center;
-  background: rgba(0, 0, 0, 0.6);
-  padding: 50px;
-  border-radius: 20px;
-  width: 600px;            /* back to original desktop width */
-  max-width: 600px;
-  backdrop-filter: blur(10px);
-}
-
-/* =========================
-   MOBILE ONLY CHANGES
-========================= */
-
-@media (max-width: 600px) {
-
-  body {
-    align-items: flex-start;   /* prevents vertical squish */
-    padding-top: 40px;
+<body>
+<div class="category-dropdown">
+  <button id="categoryBtn">Select Categories ▼</button>
+  <div id="categoryList" class="dropdown-content">
+  </div>
+</div>
+<div class="container">
+  <h1>Untitled music game</h1>
+  
+  
+  <button id="login">Login with Spotify</button>
+  <button id="play" style="display:none;">Play Random Song</button>
+  <button id="stopBtn" style="display:none;">Stop</button>
+  <button id="reveal" style="display:none;">Reveal</button>
+  
+  <div id="player"></div>
+  <h2 id="info"></h2>
+  
+  
+  <script src="https://sdk.scdn.co/spotify-player.js"></script>
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const token = urlParams.get("access_token");
+  
+  const loginBtn = document.getElementById("login");
+  const checked = [...document.querySelectorAll("#categories input:checked")]
+  .map(x=>x.value)
+  .join(",");
+  
+  const revealBtn = document.getElementById("reveal");
+  const stopBtn = document.getElementById("stopBtn");
+  const playBtn = document.getElementById("play");
+  const info = document.getElementById("info");
+  const categoryBtn = document.getElementById("categoryBtn");
+  const categoryList = document.getElementById("categoryList");
+  const dropdown = document.querySelector(".category-dropdown");
+  
+  let deviceId = null;
+  let player = null;
+  let currentSong = null;
+  let stopTimer = null;
+  
+  /* LOGIN */
+  if (!token) {
+    loginBtn.onclick = () => window.location = "/login";
+  } else {
+    loginBtn.style.display = "none";
+    playBtn.style.display = "inline-block";
   }
 
-  .container {
-    width: 90%;                /* responsive width */
-    max-width: 400px;
-    padding: 30px;
+
+async function loadCategories(){
+  const res = await fetch("/categories");
+  const cats = await res.json();
+
+categoryList.innerHTML = cats.map(c => `
+  <label class="cat-option">
+    <input type="checkbox" value="${c.id}" checked>
+    ${c.name} (${c.count})
+  </label>
+`).join("");
+}
+
+// Toggle dropdown visibility
+categoryBtn.onclick = () => {
+  document.querySelector(".category-dropdown").classList.toggle("show");
+};
+
+// Close dropdown if clicked outside
+document.addEventListener("click", (e) => {
+  if (!dropdown.contains(e.target)) {
+    dropdown.classList.remove("show");
+  }
+});
+
+// Get checked category IDs
+function getCheckedCategories(){
+  return [...document.querySelectorAll("#categoryList input:checked")]
+           .map(x => x.value)
+           .join(",");
+}
+
+// Load categories on page load
+loadCategories();
+  
+  /* SPOTIFY PLAYER */
+window.onSpotifyWebPlaybackSDKReady = () => {
+
+  console.log("SDK READY");
+
+  player = new Spotify.Player({
+    name: "Hitster Game Player",
+    getOAuthToken: cb => cb(token),
+    volume: 0.8
+  });
+
+  player.addListener("ready", async ({ device_id }) => {
+    console.log("DEVICE READY:", device_id);
+    deviceId = device_id;
+
+    // transfer playback to browser player
+    await fetch("https://api.spotify.com/v1/me/player", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      },
+      body: JSON.stringify({
+        device_ids: [device_id],
+        play: false
+      })
+    });
+
+    console.log("Playback transferred");
+  });
+
+  player.addListener("initialization_error", e => console.error(e));
+  player.addListener("authentication_error", e => console.error(e));
+  player.addListener("account_error", e => console.error(e));
+  player.addListener("playback_error", e => console.error(e));
+
+  player.connect();
+};
+
+
+  
+  /* RANDOM SONG */
+async function getRandomSong() {
+
+  const checked = [...document.querySelectorAll("#categoryList input:checked")]
+    .map(x => x.value)
+    .join(",");
+
+  const res = await fetch(`/random-song?cats=${checked}`);
+
+  if(!res.ok){
+    info.innerText="No songs found.";
+    return null;
   }
 
-  h1 {
-    font-size: 26px;
+  const song = await res.json();
+  console.log("SONG:", song);
+  return song;
+}
+
+function startTimer() {
+  clearTimeout(stopTimer);
+  stopTimer = setTimeout(async () => {
+    await fetch(`https://api.spotify.com/v1/me/player/pause?device_id=${deviceId}`, {
+      method: "PUT",
+      headers: { Authorization: "Bearer " + token }
+    });
+  }, 30000);
+}
+/*stopbtn*/
+stopBtn.onclick = async () => {
+  clearTimeout(stopTimer); // stop the auto-pause timer
+  if (!deviceId) return;
+  
+  // Pause the song immediately
+  await fetch(`https://api.spotify.com/v1/me/player/pause?device_id=${deviceId}`, {
+    method: "PUT",
+    headers: { Authorization: "Bearer " + token }
+  });
+  
+  info.innerText = "Paused!";
+};
+
+/*revealbtn*/
+revealBtn.onclick = () => {
+  if (!currentSong) {
+    info.innerText = "Play a song first!";
+    return;
   }
 
-  /* IMPORTANT: buttons stay auto-sized */
-  button {
-    font-size: 15px;
-    padding: 12px 20px;
-    margin: 6px;
+  info.innerHTML = `
+    ${currentSong.title} — ${currentSong.artist}<br>
+    Year: ${currentSong.year}
+  `;
+};
+
+/* PLAY */
+playBtn.onclick = async () => {
+
+  console.log("PLAY CLICKED");
+
+  if(!deviceId){
+    alert("Player not ready yet");
+    return;
   }
 
-  .row {
-    flex-direction: column;
-    align-items: center;
+  const song = await getRandomSong();
+  console.log("SONG:", song);
+
+  if(!song){
+    alert("No song returned from server");
+    return;
   }
-}
 
-/* =========================
-   TEXT
-========================= */
+  currentSong = song;
 
-h1 {
-  margin-bottom: 30px;
-  font-size: 36px;
-}
+  const res = await fetch(
+    `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`,
+    {
+      method:"PUT",
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization":"Bearer "+token
+      },
+      body:JSON.stringify({
+        uris:[song.spotify_uri],
+        position_ms:30000
+      })
+    }
+  );
 
-#revealInfo {
-  margin-top: 25px;
-  font-size: 20px;
-}
+  console.log("PLAY STATUS:", res.status);
 
-.song-title {
-  font-size: 22px;
-  font-weight: bold;
-}
+  startTimer();
 
-.artist-name {
-  font-size: 18px;
-  opacity: 0.8;
-  margin-top: 5px;
-}
+  info.innerText="Guess the year!";
+  stopBtn.style.display="inline";
+  revealBtn.style.display="inline";
+};
+</script>
 
-/* =========================
-   BUTTONS
-========================= */
 
-button {
-  user-select: none;
-  background: white;
-  color: #191414;
-  border: none;
-  padding: 12px 25px;
-  font-size: 16px;
-  margin: 8px;
-  border-radius: 40px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: 0.2s ease;
-  display: inline-block;   /* ensures text-sized buttons */
-}
-
-button:hover {
-  transform: scale(1.05);
-}
-
-/* =========================
-   CATEGORY DROPDOWN
-========================= */
-
-.category-dropdown {
-  user-select: none;
-  position: absolute;
-  top: 15px;
-  left: 15px;
-}
-
-#categoryBtn {
-  background-color: #1db954;
-  color: white;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-#categoryBtn:hover {
-  background-color: #17a44c;
-}
-
-.dropdown-content {
-  display: none;
-  position: absolute;
-  background: #17a44c;
-  padding: 10px;
-  border-radius: 10px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-  opacity: 0;
-  transform: translateY(-10px);
-  transition: .2s ease;
-}
-
-.dropdown-content label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 10px;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.dropdown-content input {
-  margin: 0;
-}
-
-.category-dropdown.show .dropdown-content {
-  display: block;
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.cat-option {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  font-weight: 500;
-}
-
-.cat-option span {
-  opacity: .6;
-}
-
-/* =========================
-   ROW LAYOUT
-========================= */
-
-.row {
-  display: flex;
-  gap: 10px;
-}
+</div>
+</body>
+</html>
