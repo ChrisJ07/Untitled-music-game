@@ -11,68 +11,25 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-
-  /* Background */
   background: linear-gradient(135deg, #1DB954, #191414);
   background-attachment: fixed;
-
   color: white;
 }
 
-/* =========================
-   CONTAINER
-========================= */
-
-/* Desktop = original fixed look */
 .container {
   user-select: none;
   text-align: center;
   background: rgba(0, 0, 0, 0.6);
   padding: 50px;
   border-radius: 20px;
-  width: 600px;            /* back to original desktop width */
-  max-width: 600px;
+  width: 600px;       /* fixed desktop width */
+  max-width: 90%;
   backdrop-filter: blur(10px);
-}
-
-/* =========================
-   MOBILE ONLY CHANGES
-========================= */
-
-@media (max-width: 600px) {
-
-  body {
-    align-items: flex-start;   /* prevents vertical squish */
-    padding-top: 40px;
-  }
-
-  .container {
-    width: 90%;                /* responsive width */
-    max-width: 400px;
-    padding: 30px;
-  }
-
-  h1 {
-    font-size: 26px;
-  }
-
-  /* IMPORTANT: buttons stay auto-sized */
-  button {
-    font-size: 15px;
-    padding: 12px 20px;
-    margin: 6px;
-  }
-
-  .row {
-    flex-direction: column;
-    align-items: center;
-  }
 }
 
 /* =========================
    TEXT
 ========================= */
-
 h1 {
   margin-bottom: 30px;
   font-size: 36px;
@@ -97,7 +54,6 @@ h1 {
 /* =========================
    BUTTONS
 ========================= */
-
 button {
   user-select: none;
   background: white;
@@ -110,7 +66,7 @@ button {
   font-weight: bold;
   cursor: pointer;
   transition: 0.2s ease;
-  display: inline-block;   /* ensures text-sized buttons */
+  display: inline-block; /* auto-size to text */
 }
 
 button:hover {
@@ -120,7 +76,6 @@ button:hover {
 /* =========================
    CATEGORY DROPDOWN
 ========================= */
-
 .category-dropdown {
   user-select: none;
   position: absolute;
@@ -186,8 +141,37 @@ button:hover {
 /* =========================
    ROW LAYOUT
 ========================= */
-
 .row {
   display: flex;
   gap: 10px;
+  flex-wrap: wrap;  /* ensures buttons wrap nicely on desktop */
+  justify-content: center;
+}
+
+/* =========================
+   MOBILE
+========================= */
+@media (max-width: 600px) {
+  body {
+    padding-top: 30px;
+  }
+
+  .container {
+    width: 90%;
+    padding: 30px;
+  }
+
+  h1 {
+    font-size: 26px;
+  }
+
+  .row {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  button {
+    padding: 12px 20px; /* keeps button auto-sized but smaller on mobile */
+    margin: 6px;
+  }
 }
