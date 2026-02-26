@@ -28,10 +28,25 @@ body {
   background: rgba(0, 0, 0, 0.6);
   padding: 50px;
   border-radius: 20px;
-  max-width: 600px;
-  width: 90%;
-  margin: 0 auto;
+  width: 600px; /* desktop fixed width */
   backdrop-filter: blur(10px);
+}
+
+/* Mobile only */
+@media (max-width: 600px) {
+  .container {
+    width: 90%;
+    padding: 30px;
+  }
+
+  h1 {
+    font-size: 26px;
+  }
+
+  button {
+    width: 100%;
+    margin: 6px 0;
+  }
 }
 
 h1 {
@@ -72,14 +87,6 @@ button:hover {
   font-size: 18px;
   opacity: 0.8;
   margin-top: 5px;
-}
-
-.category-dropdown {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  z-index: 1000;
-  font-family: 'Montserrat', sans-serif;
 }
 
 #categoryBtn {
@@ -155,3 +162,4 @@ button:hover {
     flex-direction: column;
   }
 }
+
