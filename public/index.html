@@ -13,12 +13,6 @@
   <div id="categoryList" class="dropdown-content">
   </div>
 </div>
-<div class="language-dropdown">
-  <select id="languageSelect">
-    <option value="en">English</option>
-    <option value="pl">Polski</option>
-  </select>
-</div>
 <div class="container">
   <h1>Untitled music game</h1>
   
@@ -137,27 +131,6 @@ window.onSpotifyWebPlaybackSDKReady = () => {
   player.connect();
 };
 
-const languageSelect = document.getElementById("languageSelect");
-
-function applyLanguage(lang) {
-  const t = translations[lang];
-
-  document.querySelector("h1").innerText = t.title;
-  loginBtn.innerText = t.login;
-  playBtn.innerText = t.play;
-  stopBtn.innerText = t.stop;
-  revealBtn.innerText = t.reveal;
-}
-
-languageSelect.addEventListener("change", (e) => {
-  applyLanguage(e.target.value);
-  localStorage.setItem("lang", e.target.value);
-});
-
-// Load saved language
-const savedLang = localStorage.getItem("lang") || "en";
-languageSelect.value = savedLang;
-applyLanguage(savedLang);
 
   
   /* RANDOM SONG */
@@ -264,6 +237,3 @@ playBtn.onclick = async () => {
 </div>
 </body>
 </html>
-
-
-
