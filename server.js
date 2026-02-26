@@ -11,9 +11,9 @@ app.use(express.json());
    SPOTIFY CONFIG
 ======================= */
 
-const CLIENT_ID = "2344e397996a4f90adf20cb30d52b559";
-const CLIENT_SECRET = "9649f6f8bcf64939a4b229df3f02701a";
-const REDIRECT_URI = "http://127.0.0.1:3000/callback";
+const CLIENT_ID = process.env.CLIENT_ID;
+const CLIENT_SECRET = process.env.CLIENT_SECRET;
+const REDIRECT_URI = process.env.REDIRECT_URI;
 
 /* =======================
    DATABASE
@@ -181,5 +181,6 @@ app.get("/random-song-year", (req,res)=>{
 /* =======================
    START
 ======================= */
+
 
 app.listen(3000,()=>console.log("Server running → http://localhost:3000"));
