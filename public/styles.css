@@ -138,80 +138,56 @@ button:hover {
   transform: translateY(0);
 }
 
-/* ================= MODE TOGGLE FIX ================= */
+
+/* ================= MODE TOGGLE ================= */
 
 .mode-toggle{
   position:absolute;
   top:15px;
   right:15px;
-  width:240px;              /* desktop width */
-  height:48px;
-  background: rgba(255,255,255,0.08);
-  backdrop-filter: blur(8px);
-  border-radius:60px;
+  width:150px;
+  height:42px;
+  background:#1DB954;
+  border-radius:50px;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:0 18px;
+  padding:0 14px;
   cursor:pointer;
-  font-size:15px;
+  font-size:14px;
   color:white;
   z-index:2000;
   user-select:none;
   overflow:hidden;
-  transition:all 0.3s ease;
+  transition:background 0.3s ease;
 }
 
-/* Text inside slider */
+/* Text */
 .mode-toggle span{
   z-index:2;
   pointer-events:none;
   font-weight:600;
-  white-space:nowrap;
-  flex:1;
-  text-align:center;
 }
 
 /* Sliding indicator */
 .toggle-slider{
   position:absolute;
-  width:120px;           /* fixed width to match working version */
-  height:40px;
-  background: rgba(29,185,84,0.85);
-  border-radius:50px;
+  width:70px;
+  height:34px;
+  background:#169c46; /* darker green */
+  border-radius:40px;
   top:4px;
-  left:4px;
   transition:all 0.35s cubic-bezier(.4,0,.2,1);
-  z-index:1;
 }
 
-/* Positions for JS toggle */
-.toggle-slider.app{
+/* Positions */
+.toggle-slider.normal{
   left:4px;
 }
 
-.toggle-slider.qr{
-  left:116px;  /* left = slider width + 4px gap to slide properly */
+.toggle-slider.year{
+  right:4px;
 }
-
-/* MOBILE FIXS */
-@media (max-width: 600px) {
-  .mode-toggle {
-    width: 170px;       /* smaller for mobile */
-    height:36px;
-    padding:0 10px;
-    font-size:12px;
-  }
-  .toggle-slider.qr {
-    left:86px;           /* 50px width + 4px gap? adjust to fit mobile width */
-  }
-
-  #categoryBtn {
-    font-size:12px;
-    padding:6px 10px;
-  }
-}
-
 /* ================= MOBILE ================= */
 @media (max-width: 600px) {
   .container {
@@ -240,6 +216,7 @@ button:hover {
     font-size: 12px;
   }
 }
+
 
 
 
