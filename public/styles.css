@@ -175,3 +175,39 @@ button:hover {
     margin: 6px;
   }
 }
+
+/* MODE SWITCH TOP RIGHT */
+.mode-switch{
+  position:absolute;
+  top:15px;
+  right:15px;
+  display:flex;
+  gap:8px;
+  z-index:1000;
+}
+
+.mode-switch button{
+  padding:6px 12px;
+  font-size:14px;
+}
+
+.mode-switch .active{
+  background:#1DB954;
+  color:white;
+}
+
+/* CATEGORY ABOVE CONTAINER */
+.category-dropdown{
+  position:absolute;
+  top:15px;
+  left:15px;
+  z-index:1001;
+}
+
+/* BUTTON WRAP FIX */
+.row{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:10px;
+}
