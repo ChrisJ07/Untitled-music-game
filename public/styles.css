@@ -33,6 +33,13 @@ body {
   backdrop-filter: blur(10px);
 }
 
+.song-title,
+.artist-name {
+  white-space: normal;     /* allow wrapping */
+  word-break: break-word;  /* prevent overflow */
+  text-align: center;
+}
+
 /* ================= TEXT ================= */
 h1 {
   margin-bottom: 30px;
@@ -232,7 +239,7 @@ button:hover {
 
   .mode-toggle{
     width:180px;        /* fixed width on mobile */
-    height:54px;
+    height:52px;
     padding:6px;
     font-size:13px;
   }
@@ -243,6 +250,7 @@ button:hover {
     width:calc(50% - 6px);
   }
 }
+
 
 
 
