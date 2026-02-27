@@ -149,14 +149,17 @@ button:hover {
   position:absolute;
   top:15px;
   right:15px;
-  width:150px;
-  height:42px;
-  background:#1DB954;
-  border-radius:50px;
-  display:flex;
+
+  display:inline-flex;              /* size to content */
   align-items:center;
   justify-content:space-between;
-  padding:0 14px;
+
+  padding:4px;                      /* space for slider */
+  gap:18px;                         /* space between texts */
+
+  background:#1DB954;
+  border-radius:50px;
+
   cursor:pointer;
   font-size:14px;
   color:white;
@@ -168,6 +171,7 @@ button:hover {
 
 /* Text */
 .mode-toggle span{
+  padding:0 14px;                   /* text spacing */
   z-index:2;
   pointer-events:none;
   font-weight:600;
@@ -176,21 +180,22 @@ button:hover {
 /* Sliding indicator */
 .toggle-slider{
   position:absolute;
-  width:70px;
-  height:34px;
-  background:#169c46; /* darker green */
+  height:calc(100% - 8px);          /* perfectly centered vertically */
+  width:50%;                        /* half of toggle */
+  background:#169c46;
   border-radius:40px;
   top:4px;
+  left:4px;
   transition:all 0.35s cubic-bezier(.4,0,.2,1);
 }
 
-/* Positions */
+/* Positions — DO NOT CHANGE LOGIC */
 .toggle-slider.normal{
   left:4px;
 }
 
 .toggle-slider.year{
-  right:4px;
+  left:50%;
 }
 /* ================= MOBILE ================= */
 @media (max-width: 600px) {
@@ -220,6 +225,7 @@ button:hover {
     font-size: 12px;
   }
 }
+
 
 
 
