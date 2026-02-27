@@ -85,7 +85,10 @@ button:hover {
 }
 
 .row button {
-  flex: 0 0 auto; /* buttons scale to text only */
+  flex: 0 0 auto;
+  width: auto;
+  min-width: unset;
+  max-width: unset;
 }
 
 /* ================= CATEGORY DROPDOWN ================= */
@@ -217,6 +220,7 @@ button:hover {
     font-size: 12px;
   }
 }
+
 
 
 
