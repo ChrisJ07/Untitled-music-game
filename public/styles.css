@@ -93,16 +93,17 @@ button:hover {
 }
 
 #categoryBtn {
-  background-color: #1db954;
-  color: white;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
+  background: rgba(0,0,0,0.25);
+  backdrop-filter: blur(6px);
+  color:white;
+  padding:10px 16px;
+  border-radius:30px;
+  border:1px solid rgba(255,255,255,0.15);
+  transition:all 0.2s ease;
 }
 
-#categoryBtn:hover {
-  background-color: #17a44c;
+#categoryBtn:hover{
+  background: rgba(0,0,0,0.35);
 }
 
 .dropdown-content {
@@ -288,3 +289,4 @@ button:hover {
 .toggle-slider.qr{
   left:calc(50% - 4px);
 }
+
