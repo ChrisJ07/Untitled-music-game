@@ -2,67 +2,38 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="styles.css">
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
 <title>Year Mode</title>
-
-<style>
-body{
-  font-family: 'Montserrat', sans-serif;
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  background: linear-gradient(135deg,#1DB954,#191414);
-  color:white;
-}
-
-.container{
-  text-align:center;
-  background:rgba(0,0,0,0.6);
-  padding:40px;
-  border-radius:20px;
-  width:90%;
-  max-width:500px;
-  backdrop-filter: blur(10px);
-}
-
-button{
-  background:white;
-  color:#191414;
-  border:none;
-  padding:12px 22px;
-  font-size:16px;
-  margin:8px;
-  border-radius:40px;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-button:hover{
-  transform:scale(1.05);
-}
-
-#reader{
-  width:100%;
-  max-width:300px;
-  margin:20px auto;
-}
-</style>
 </head>
 
 <body>
+
+<div class="category-dropdown">
+  <button id="categoryBtn">Select Categories ▼</button>
+  <div id="categoryList" class="dropdown-content"></div>
+</div>
 
 <div class="container">
 
 <h1 id="title">Year Mode</h1>
 
 <div id="reader"></div>
-<button id="scanBtn">Scan QR</button>
 
-<br>
+<div class="row">
+  <button id="scanBtn">Scan QR</button>
+  <button id="nextScanBtn" style="display:none;">Next Scan</button>
+</div>
 
-<button id="play" style="display:none;">Play Song</button>
-<button id="reveal" style="display:none;">Reveal</button>
+<div class="row">
+  <button id="play" style="display:none;">Play</button>
+  <button id="stopBtn" style="display:none;">Stop</button>
+  <button id="reveal" style="display:none;">Reveal</button>
+</div>
+
+<div class="row">
+  <button onclick="window.location.href='/'">Normal Mode</button>
+</div>
 
 <h2 id="info"></h2>
 
@@ -78,10 +49,7 @@ button:hover{
 ========================= */
 
 const token = localStorage.getItem("spotify_token");
-
-if(!token){
-  window.location.href="/";
-}
+if(!token) window.location.href="/";
 
 /* =========================
    ELEMENTS
@@ -89,14 +57,55 @@ if(!token){
 
 const title = document.getElementById("title");
 const scanBtn = document.getElementById("scanBtn");
+const nextScanBtn = document.getElementById("nextScanBtn");
 const playBtn = document.getElementById("play");
+const stopBtn = document.getElementById("stopBtn");
 const revealBtn = document.getElementById("reveal");
 const info = document.getElementById("info");
+const categoryBtn = document.getElementById("categoryBtn");
+const categoryList = document.getElementById("categoryList");
+const dropdown = document.querySelector(".category-dropdown");
 
 let player;
 let deviceId;
 let currentSong;
 let selectedYear = null;
+let stopTimer = null;
+let qrScanner;
+
+/* =========================
+   LOAD CATEGORIES
+========================= */
+
+async function loadCategories(){
+  const res = await fetch("/categories");
+  const cats = await res.json();
+
+  categoryList.innerHTML = cats.map(c => `
+    <label class="cat-option">
+      <input type="checkbox" value="${c.id}" checked>
+      ${c.name} (${c.count})
+    </label>
+  `).join("");
+}
+
+function getCheckedCategories(){
+  return [...document.querySelectorAll("#categoryList input:checked")]
+    .map(x => x.value)
+    .join(",");
+}
+
+categoryBtn.onclick = () => {
+  dropdown.classList.toggle("show");
+};
+
+document.addEventListener("click",(e)=>{
+  if(!dropdown.contains(e.target)){
+    dropdown.classList.remove("show");
+  }
+});
+
+loadCategories();
 
 /* =========================
    SPOTIFY PLAYER
@@ -105,13 +114,12 @@ let selectedYear = null;
 window.onSpotifyWebPlaybackSDKReady = () => {
 
   player = new Spotify.Player({
-    name: "Year Mode Player",
-    getOAuthToken: cb => cb(token)
+    name:"Year Mode Player",
+    getOAuthToken:cb=>cb(token)
   });
 
-  player.addListener("ready", async ({ device_id }) => {
-
-    deviceId = device_id;
+  player.addListener("ready", async ({device_id})=>{
+    deviceId=device_id;
 
     await fetch("https://api.spotify.com/v1/me/player",{
       method:"PUT",
@@ -124,52 +132,71 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         play:false
       })
     });
-
   });
 
   player.connect();
 };
 
 /* =========================
-   QR SCANNER
+   QR SCAN
 ========================= */
 
-scanBtn.onclick = () => {
+function startScanner(){
 
-  const qr = new Html5Qrcode("reader");
+  qrScanner = new Html5Qrcode("reader");
 
-  qr.start(
-    { facingMode:"environment" },
-    { fps:10, qrbox:250 },
-    async (decodedText) => {
-
+  qrScanner.start(
+    {facingMode:"environment"},
+    {fps:10, qrbox:250},
+    async (decodedText)=>{
       selectedYear = decodedText.trim();
       title.innerText = "Year " + selectedYear;
 
-      await qr.stop();
+      await qrScanner.stop();
 
       scanBtn.style.display="none";
+      nextScanBtn.style.display="inline-block";
       playBtn.style.display="inline-block";
     },
-    error => {}
+    error=>{}
   );
+}
+
+scanBtn.onclick = startScanner;
+
+nextScanBtn.onclick = ()=>{
+  info.innerText="";
+  revealBtn.style.display="none";
+  playBtn.style.display="none";
+  startScanner();
 };
 
 /* =========================
-   PLAY
+   PLAY (30s FROM MIDDLE)
 ========================= */
 
-playBtn.onclick = async () => {
+function startTimer(){
+  clearTimeout(stopTimer);
+  stopTimer = setTimeout(async ()=>{
+    await fetch(`https://api.spotify.com/v1/me/player/pause?device_id=${deviceId}`,{
+      method:"PUT",
+      headers:{ Authorization:"Bearer "+token }
+    });
+  },30000);
+}
+
+playBtn.onclick = async ()=>{
 
   if(!deviceId){
     alert("Player still loading");
     return;
   }
 
-  const res = await fetch(`/random-song-year?year=${selectedYear}`);
+  const cats = getCheckedCategories();
+  const res = await fetch(`/random-song-year?year=${selectedYear}&cats=${cats}`);
 
   if(!res.ok){
-    info.innerText="No song for this year.";
+    info.innerText="No songs found.";
     return;
   }
 
@@ -184,21 +211,42 @@ playBtn.onclick = async () => {
         "Authorization":"Bearer "+token
       },
       body:JSON.stringify({
-        uris:[currentSong.spotify_uri]
+        uris:[currentSong.spotify_uri],
+        position_ms:30000   // 🔥 START FROM 30s
       })
     }
   );
 
+  startTimer();
+
   info.innerText="Guess the year!";
+  stopBtn.style.display="inline-block";
   revealBtn.style.display="inline-block";
+};
+
+/* =========================
+   STOP
+========================= */
+
+stopBtn.onclick = async ()=>{
+  clearTimeout(stopTimer);
+
+  await fetch(
+    `https://api.spotify.com/v1/me/player/pause?device_id=${deviceId}`,
+    {
+      method:"PUT",
+      headers:{ Authorization:"Bearer "+token }
+    }
+  );
+
+  info.innerText="Paused!";
 };
 
 /* =========================
    REVEAL
 ========================= */
 
-revealBtn.onclick = () => {
-
+revealBtn.onclick = ()=>{
   if(!currentSong) return;
 
   info.innerHTML = `
