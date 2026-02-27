@@ -3,7 +3,6 @@
   padding: 0;
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent; /* remove blue tap highlight */
-  white-space: nowrap;
 }
 
 button:focus {
@@ -20,6 +19,7 @@ body {
   background: linear-gradient(135deg, #1DB954, #191414);
   background-attachment: fixed;
   color: white;
+    white-space: nowrap;
 }
 
 .container {
@@ -31,7 +31,7 @@ body {
   width: 600px;
   max-width: 90%;
   backdrop-filter: blur(10px);
-  white-space: wrap;
+    white-space: nowrap;
 }
 
 
@@ -49,14 +49,12 @@ h1 {
 .song-title {
   font-size: 22px;
   font-weight: bold;
-  white-space: wrap;
 }
 
 .artist-name {
   font-size: 18px;
   opacity: 0.8;
   margin-top: 5px;
-  white-space: wrap;
 }
 
 /* ================= BUTTONS ================= */
@@ -86,6 +84,7 @@ button:hover {
   gap: 10px;
   flex-wrap: wrap;
   justify-content: center;
+    white-space: nowrap;
 }
 
 .row button {
@@ -93,6 +92,7 @@ button:hover {
   width: auto;
   min-width: unset;
   max-width: unset;
+    white-space: nowrap;
 }
 
 /* ================= CATEGORY DROPDOWN ================= */
@@ -102,6 +102,7 @@ button:hover {
   top: 15px;
   left: 15px;
   z-index: 1000;
+    white-space: nowrap;
 }
 
 #categoryBtn {
@@ -116,6 +117,7 @@ button:hover {
   height:48px;
   display:flex;
   align-items:center;
+    white-space: nowrap;
 }
 
 #categoryBtn:hover {
@@ -180,6 +182,7 @@ button:hover {
   z-index:2000;
   user-select:none;
   overflow:hidden;
+    white-space: nowrap;
 }
 
 .mode-toggle span{
@@ -188,6 +191,7 @@ button:hover {
   z-index:2;
   pointer-events:none;
   font-weight:600;
+    white-space: nowrap;
 }
 
 /* Sliding indicator */
@@ -202,6 +206,7 @@ button:hover {
 
   top:6px;                 /* SAME as horizontal gap */
   transition:all 0.35s cubic-bezier(.4,0,.2,1);
+    white-space: nowrap;
 }
 
 /* Working positions — DO NOT CHANGE LOGIC */
@@ -247,6 +252,7 @@ button:hover {
     width:calc(50% - 6px);
   }
 }
+
 
 
 
