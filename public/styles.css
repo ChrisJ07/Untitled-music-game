@@ -138,15 +138,15 @@ button:hover {
   transform: translateY(0);
 }
 
-/* ================= MODE TOGGLE ================= */
+/* ================= MODE TOGGLE FIX ================= */
 
 .mode-toggle{
   position:absolute;
   top:15px;
   right:15px;
-  width:240px;              /* extended width */
+  width:240px;              /* desktop width */
   height:48px;
-  background: rgba(255,255,255,0.08); /* dynamic glass look */
+  background: rgba(255,255,255,0.08);
   backdrop-filter: blur(8px);
   border-radius:60px;
   display:flex;
@@ -162,35 +162,54 @@ button:hover {
   transition:all 0.3s ease;
 }
 
-/* Text */
+/* Text inside slider */
 .mode-toggle span{
   z-index:2;
   pointer-events:none;
   font-weight:600;
-  white-space:nowrap;       /* FORCE single line */
+  white-space:nowrap;
   flex:1;
-  text-align:center;        /* PERFECT CENTERING */
+  text-align:center;
 }
 
 /* Sliding indicator */
 .toggle-slider{
   position:absolute;
-  width:50%;
+  width:120px;           /* fixed width to match working version */
   height:40px;
   background: rgba(29,185,84,0.85);
   border-radius:50px;
   top:4px;
   left:4px;
   transition:all 0.35s cubic-bezier(.4,0,.2,1);
+  z-index:1;
 }
 
-/* Positions */
+/* Positions for JS toggle */
 .toggle-slider.app{
   left:4px;
 }
 
 .toggle-slider.qr{
-  right:4px;
+  left:116px;  /* left = slider width + 4px gap to slide properly */
+}
+
+/* MOBILE FIXS */
+@media (max-width: 600px) {
+  .mode-toggle {
+    width: 170px;       /* smaller for mobile */
+    height:36px;
+    padding:0 10px;
+    font-size:12px;
+  }
+  .toggle-slider.qr {
+    left:86px;           /* 50px width + 4px gap? adjust to fit mobile width */
+  }
+
+  #categoryBtn {
+    font-size:12px;
+    padding:6px 10px;
+  }
 }
 
 /* ================= MOBILE ================= */
@@ -221,6 +240,7 @@ button:hover {
     font-size: 12px;
   }
 }
+
 
 
 
