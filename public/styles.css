@@ -186,9 +186,7 @@ button:hover {
   background:#169c46;
   border-radius:50px;
 
-  top:50%;                     /* center vertically */
-  transform:translateY(-50%);  /* perfect vertical center */
-
+  top:6px;                 /* SAME as horizontal gap */
   transition:all 0.35s cubic-bezier(.4,0,.2,1);
 }
 
@@ -228,6 +226,7 @@ button:hover {
     font-size: 12px;
   }
 }
+
 
 
 
