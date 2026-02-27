@@ -246,12 +246,28 @@ playBtn.onclick = async () => {
   stopBtn.style.display="inline";
   revealBtn.style.display="inline";
 };
+
+  const modeToggle = document.getElementById("modeToggle");
+const toggleSlider = document.getElementById("toggleSlider");
+
+modeToggle.addEventListener("click", () => {
+  if(toggleSlider.classList.contains("app")){
+    toggleSlider.classList.remove("app");
+    toggleSlider.classList.add("qr");
+    // Switch logic to QR mode
+  } else {
+    toggleSlider.classList.remove("qr");
+    toggleSlider.classList.add("app");
+    // Switch logic to App only mode
+  }
+});
 </script>
 
 
 </div>
 </body>
 </html>
+
 
 
 
