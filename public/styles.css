@@ -2,19 +2,14 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-}
-
-/* Remove blue tap highlight on mobile */
-* {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Remove button focus glow */
 button:focus {
   outline: none;
 }
+
 body {
-  user-select: none;
   font-family: 'Montserrat', sans-serif;
   min-height: 100vh;
   display: flex;
@@ -25,20 +20,20 @@ body {
   color: white;
 }
 
+/* ================= CONTAINER ================= */
+
 .container {
-  user-select: none;
   text-align: center;
   background: rgba(0, 0, 0, 0.6);
   padding: 50px;
   border-radius: 20px;
-  width: 600px;       /* fixed desktop width */
+  width: 600px;
   max-width: 90%;
   backdrop-filter: blur(10px);
 }
 
-/* =========================
-   TEXT
-========================= */
+/* ================= TEXT ================= */
+
 h1 {
   margin-bottom: 30px;
   font-size: 36px;
@@ -60,62 +55,73 @@ h1 {
   margin-top: 5px;
 }
 
-/* =========================
-   BUTTONS
-========================= */
+/* ================= BUTTONS ================= */
+
 button {
-  user-select: none;
   background: white;
   color: #191414;
   border: none;
-  padding: 12px 25px;
+  padding: 12px 28px;
   font-size: 16px;
-  margin: 8px;
   border-radius: 40px;
   font-weight: bold;
   cursor: pointer;
   transition: 0.2s ease;
-  display: inline-block; /* auto-size to text */
+  white-space: nowrap; /* 🔥 prevents text wrapping */
 }
 
 button:hover {
   transform: scale(1.05);
 }
 
-/* =========================
-   CATEGORY DROPDOWN
-========================= */
+/* ================= ROW LAYOUT ================= */
+
+.row {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 15px 0;
+  flex-wrap: wrap;
+}
+
+.row button {
+  flex: 0 0 auto; /* 🔥 prevents shrinking */
+}
+
+/* ================= CATEGORY ================= */
+
 .category-dropdown {
-  user-select: none;
   position: absolute;
   top: 15px;
   left: 15px;
+  z-index: 1000;
 }
 
 #categoryBtn {
   background: rgba(0,0,0,0.25);
   backdrop-filter: blur(6px);
-  color:white;
-  padding:10px 16px;
-  border-radius:30px;
-  border:1px solid rgba(255,255,255,0.15);
-  transition:all 0.2s ease;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 25px;
+  border: 1px solid rgba(255,255,255,0.15);
+  font-size: 14px;
 }
 
-#categoryBtn:hover{
+#categoryBtn:hover {
   background: rgba(0,0,0,0.35);
 }
 
 .dropdown-content {
   display: none;
   position: absolute;
-  background: #17a44c;
+  background: rgba(0,0,0,0.85);
   padding: 10px;
   border-radius: 10px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-  opacity: 0;
-  transform: translateY(-10px);
-  transition: .2s ease;
+  margin-top: 8px;
+}
+
+.category-dropdown.show .dropdown-content {
+  display: block;
 }
 
 .dropdown-content label {
@@ -127,47 +133,57 @@ button:hover {
   white-space: nowrap;
 }
 
-.dropdown-content input {
-  margin: 0;
-}
+/* ================= MODE TOGGLE ================= */
 
-.category-dropdown.show .dropdown-content {
-  display: block;
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.cat-option {
+.mode-toggle {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 210px;   /* smaller so no mobile overlap */
+  height: 42px;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(6px);
+  border-radius: 50px;
   display: flex;
-  gap: 8px;
   align-items: center;
-  font-weight: 500;
+  cursor: pointer;
+  overflow: hidden;
+  font-size: 14px;
+  z-index: 1000;
 }
 
-.cat-option span {
-  opacity: .6;
+.mode-toggle span {
+  flex: 1;
+  text-align: center;
+  font-weight: 600;
+  z-index: 2;
+  white-space: nowrap;
 }
 
-/* =========================
-   ROW LAYOUT
-========================= */
-.row {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;  /* ensures buttons wrap nicely on desktop */
-  justify-content: center;
+/* sliding highlight */
+.toggle-slider {
+  position: absolute;
+  width: 50%;
+  height: 100%;
+  background: rgba(29,185,84,0.9);
+  border-radius: 50px;
+  top: 0;
+  left: 0;
+  transition: transform 0.35s cubic-bezier(.4,0,.2,1);
+  z-index: 1;
 }
 
-/* =========================
-   MOBILE
-========================= */
+/* 🔥 this fixes sliding */
+.toggle-slider.qr {
+  transform: translateX(100%);
+}
+
+/* ================= MOBILE ================= */
+
 @media (max-width: 600px) {
-  body {
-    padding-top: 30px;
-  }
 
   .container {
-    width: 90%;
+    width: 92%;
     padding: 30px;
   }
 
@@ -175,118 +191,19 @@ button:hover {
     font-size: 26px;
   }
 
+  .mode-toggle {
+    width: 170px;
+    height: 36px;
+    font-size: 12px;
+  }
+
+  #categoryBtn {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
   .row {
     flex-direction: column;
-    align-items: center;
   }
 
-  button {
-    padding: 12px 20px; /* keeps button auto-sized but smaller on mobile */
-    margin: 6px;
-  }
 }
-
-/* MODE SWITCH TOP RIGHT */
-.mode-switch{
-  position:absolute;
-  top:15px;
-  right:15px;
-  display:flex;
-  gap:10px;
-  z-index:1000;
-}
-
-.mode-switch button{
-  background:#1DB954;
-  color:white;
-  border:none;
-  padding:8px 14px;
-  border-radius:20px;
-  font-size:14px;
-  cursor:pointer;
-}
-
-.mode-switch button:hover{
-  opacity:0.9;
-}
-
-/* CATEGORY ABOVE CONTAINER */
-.category-dropdown{
-  position:absolute;
-  top:15px;
-  left:15px;
-  z-index:1001;
-}
-
-/* BUTTON WRAP FIX */
-.row{
-  display:flex;
-  flex-direction:row;
-  flex-wrap:wrap;
-  justify-content:center;
-  align-items:center;
-  gap:12px;
-  margin:15px 0;
-}
-
-.row button{
-  flex:1 1 auto;
-  min-width:110px;
-  max-width:180px;
-}
-
-/* ================= MODE TOGGLE ================= */
-
-.mode-toggle{
-  position:absolute;
-  top:15px;
-  right:15px;
-  width:240px;              /* extended width */
-  height:48px;
-  background: rgba(255,255,255,0.08); /* dynamic glass look */
-  backdrop-filter: blur(8px);
-  border-radius:60px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:0 18px;
-  cursor:pointer;
-  font-size:15px;
-  color:white;
-  z-index:2000;
-  user-select:none;
-  overflow:hidden;
-  transition:all 0.3s ease;
-}
-
-/* Text */
-.mode-toggle span{
-  z-index:2;
-  pointer-events:none;
-  font-weight:600;
-  white-space:nowrap;       /* FORCE single line */
-  flex:1;
-  text-align:center;        /* PERFECT CENTERING */
-}
-
-/* Sliding indicator */
-.toggle-slider{
-  position:absolute;
-  width:50%;
-  height:40px;
-  background: rgba(29,185,84,0.85);
-  border-radius:50px;
-  top:4px;
-  left:4px;
-  transition:all 0.35s cubic-bezier(.4,0,.2,1);
-}
-
-/* Positions */
-.toggle-slider.app{
-  left:4px;
-}
-
-.toggle-slider.qr{
-  left:calc(50% - 4px);
-}
-
