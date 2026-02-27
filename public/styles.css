@@ -149,21 +149,23 @@ button:hover {
   position:absolute;
   top:15px;
   right:15px;
-  width:150px;
-  height:42px;
+
+  width:180px;              /* slightly wider */
+  height:52px;              /* taller */
   background:#1DB954;
-  border-radius:50px;
+  border-radius:60px;
+
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:0 14px;
+  padding:0 20px;           /* spacing for text */
+
   cursor:pointer;
-  font-size:14px;
+  font-size:15px;
   color:white;
   z-index:2000;
   user-select:none;
   overflow:hidden;
-  transition:background 0.3s ease;
 }
 
 /* Text */
@@ -176,21 +178,24 @@ button:hover {
 /* Sliding indicator */
 .toggle-slider{
   position:absolute;
-  width:70px;
-  height:34px;
-  background:#169c46; /* darker green */
-  border-radius:40px;
-  top:4px;
+
+  width:80px;               /* wider knob */
+  height:40px;              /* thicker knob */
+
+  background:#169c46;
+  border-radius:50px;
+
+  top:6px;                  /* vertically centered */
   transition:all 0.35s cubic-bezier(.4,0,.2,1);
 }
 
-/* Positions */
+/* Working positions — DO NOT CHANGE LOGIC */
 .toggle-slider.normal{
-  left:4px;
+  left:6px;                 /* left gap */
 }
 
 .toggle-slider.year{
-  right:4px;
+  right:6px;                /* right gap (FIXES EDGE ISSUE) */
 }
 /* ================= MOBILE ================= */
 @media (max-width: 600px) {
@@ -220,6 +225,7 @@ button:hover {
     font-size: 12px;
   }
 }
+
 
 
 
