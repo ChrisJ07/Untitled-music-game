@@ -104,15 +104,25 @@ button:hover {
   background: rgba(0,0,0,0.25);
   backdrop-filter: blur(6px);
   color:white;
-  padding:10px 16px;
-  border-radius:30px;
+  padding:0 18px;        /* match toggle */
+  border-radius:50px;
   border:1px solid rgba(255,255,255,0.15);
   transition:all 0.2s ease;
-  white-space: nowrap; /* prevent text wrap */
+  white-space: nowrap;
+  height:48px;
+  display:flex;
+  align-items:center;
 }
 
 #categoryBtn:hover {
   background: rgba(0,0,0,0.35);
+}
+
+#categoryBtn,
+.mode-toggle{
+  height:48px;
+  display:flex;
+  align-items:center;
 }
 
 .dropdown-content {
@@ -222,7 +232,7 @@ button:hover {
 
   .mode-toggle{
     width:180px;        /* fixed width on mobile */
-    height:48px;
+    height:54px;
     padding:6px;
     font-size:13px;
   }
@@ -233,6 +243,7 @@ button:hover {
     width:calc(50% - 6px);
   }
 }
+
 
 
 
