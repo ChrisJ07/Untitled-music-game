@@ -30,6 +30,12 @@ body {
   width: 600px;
   max-width: 90%;
   backdrop-filter: blur(10px);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.container:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 25px rgba(0,0,0,0.4);
 }
 
 /* ================= TEXT ================= */
@@ -37,22 +43,6 @@ body {
 h1 {
   margin-bottom: 30px;
   font-size: 36px;
-}
-
-#revealInfo {
-  margin-top: 25px;
-  font-size: 20px;
-}
-
-.song-title {
-  font-size: 22px;
-  font-weight: bold;
-}
-
-.artist-name {
-  font-size: 18px;
-  opacity: 0.8;
-  margin-top: 5px;
 }
 
 /* ================= BUTTONS ================= */
@@ -67,7 +57,7 @@ button {
   font-weight: bold;
   cursor: pointer;
   transition: 0.2s ease;
-  white-space: nowrap; /* 🔥 prevents text wrapping */
+  white-space: nowrap; /* prevents wrapping */
 }
 
 button:hover {
@@ -85,7 +75,7 @@ button:hover {
 }
 
 .row button {
-  flex: 0 0 auto; /* 🔥 prevents shrinking */
+  flex: 0 0 auto; /* buttons scale to text only */
 }
 
 /* ================= CATEGORY ================= */
@@ -98,23 +88,23 @@ button:hover {
 }
 
 #categoryBtn {
-  background: rgba(0,0,0,0.25);
-  backdrop-filter: blur(6px);
+  background: rgba(29,185,84,0.6); /* slightly darker than gradient */
   color: white;
   padding: 8px 14px;
   border-radius: 25px;
-  border: 1px solid rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.2);
   font-size: 14px;
+  backdrop-filter: blur(4px);
 }
 
 #categoryBtn:hover {
-  background: rgba(0,0,0,0.35);
+  background: rgba(29,185,84,0.75);
 }
 
 .dropdown-content {
   display: none;
   position: absolute;
-  background: rgba(0,0,0,0.85);
+  background: rgba(29,185,84,0.85); /* greenish background */
   padding: 10px;
   border-radius: 10px;
   margin-top: 8px;
@@ -139,8 +129,8 @@ button:hover {
   position: absolute;
   top: 15px;
   right: 15px;
-  width: 210px;   /* smaller so no mobile overlap */
-  height: 42px;
+  width: 220px;
+  height: 44px;
   background: rgba(255,255,255,0.08);
   backdrop-filter: blur(6px);
   border-radius: 50px;
@@ -150,6 +140,7 @@ button:hover {
   overflow: hidden;
   font-size: 14px;
   z-index: 1000;
+  border: 2px solid rgba(29,185,84,0.9); /* border around toggle */
 }
 
 .mode-toggle span {
@@ -158,6 +149,7 @@ button:hover {
   font-weight: 600;
   z-index: 2;
   white-space: nowrap;
+  pointer-events: none;
 }
 
 /* sliding highlight */
@@ -173,7 +165,6 @@ button:hover {
   z-index: 1;
 }
 
-/* 🔥 this fixes sliding */
 .toggle-slider.qr {
   transform: translateX(100%);
 }
@@ -191,15 +182,15 @@ button:hover {
     font-size: 26px;
   }
 
-  .mode-toggle {
-    width: 170px;
-    height: 36px;
-    font-size: 12px;
-  }
-
   #categoryBtn {
     font-size: 12px;
     padding: 6px 10px;
+  }
+
+  .mode-toggle {
+    width: 180px;
+    height: 36px;
+    font-size: 12px;
   }
 
   .row {
