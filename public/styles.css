@@ -3,6 +3,7 @@
   padding: 0;
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent; /* remove blue tap highlight */
+  white-space: nowrap;
 }
 
 button:focus {
@@ -216,6 +217,7 @@ button:hover {
     font-size: 12px;
   }
 }
+
 
 
 
