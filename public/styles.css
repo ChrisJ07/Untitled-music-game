@@ -4,6 +4,15 @@
   box-sizing: border-box;
 }
 
+/* Remove blue tap highlight on mobile */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Remove button focus glow */
+button:focus {
+  outline: none;
+}
 body {
   user-select: none;
   font-family: 'Montserrat', sans-serif;
@@ -225,46 +234,52 @@ button:hover {
   max-width:180px;
 }
 
-/* MODE TOGGLE SLIDER */
+/* ================= MODE TOGGLE ================= */
+
 .mode-toggle{
   position:absolute;
   top:15px;
   right:15px;
-  width:140px;
-  height:40px;
+  width:150px;
+  height:42px;
   background:#1DB954;
-  border-radius:40px;
+  border-radius:50px;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:0 12px;
+  padding:0 14px;
   cursor:pointer;
   font-size:14px;
   color:white;
-  z-index:1000;
+  z-index:2000;
+  user-select:none;
+  overflow:hidden;
+  transition:background 0.3s ease;
 }
 
+/* Text */
 .mode-toggle span{
   z-index:2;
+  pointer-events:none;
+  font-weight:600;
 }
 
+/* Sliding indicator */
 .toggle-slider{
   position:absolute;
   width:70px;
   height:34px;
-  background:white;
+  background:#169c46; /* darker green */
   border-radius:40px;
-  transition:0.3s;
+  top:4px;
+  transition:all 0.35s cubic-bezier(.4,0,.2,1);
+}
+
+/* Positions */
+.toggle-slider.normal{
+  left:4px;
 }
 
 .toggle-slider.year{
-  right:3px;
+  right:4px;
 }
-
-.toggle-slider.normal{
-  left:3px;
-}
-
-
-
-
