@@ -191,7 +191,28 @@ nextBtn.onclick=async()=>{
   startScanner();
 };
 </script>
+  <script>
+const modeToggle = document.querySelector('.mode-toggle');
+const slider = document.querySelector('.toggle-slider');
+let currentMode = 'app'; // default mode
+
+modeToggle.addEventListener('click', () => {
+  if(currentMode === 'app'){
+    currentMode = 'qr';
+    slider.classList.add('qr');
+    slider.classList.remove('app');
+  } else {
+    currentMode = 'app';
+    slider.classList.add('app');
+    slider.classList.remove('qr');
+  }
+
+  // Optional: do something with the mode, e.g., show/hide elements
+  console.log('Mode switched to:', currentMode);
+});
+</script>
 
 </body>
 </html>
+
 
