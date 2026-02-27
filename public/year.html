@@ -1,97 +1,181 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
 <title>Year Mode</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
+
 <style>
 body{
-  font-family:Montserrat,sans-serif;
-  text-align:center;
-  padding-top:40px;
-  background:#111;
+  font-family: 'Montserrat', sans-serif;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background: linear-gradient(135deg,#1DB954,#191414);
   color:white;
 }
+
+.container{
+  text-align:center;
+  background:rgba(0,0,0,0.6);
+  padding:40px;
+  border-radius:20px;
+  width:90%;
+  max-width:500px;
+  backdrop-filter: blur(10px);
+}
+
 button{
-  padding:14px 22px;
-  font-size:18px;
-  margin:10px;
-  border-radius:10px;
+  background:white;
+  color:#191414;
   border:none;
+  padding:12px 22px;
+  font-size:16px;
+  margin:8px;
+  border-radius:40px;
+  font-weight:bold;
   cursor:pointer;
+}
+
+button:hover{
+  transform:scale(1.05);
+}
+
+#reader{
+  width:100%;
+  max-width:300px;
+  margin:20px auto;
 }
 </style>
 </head>
+
 <body>
 
-<h1 id="title">Loading...</h1>
+<div class="container">
 
-<button id="play">Play Song</button>
+<h1 id="title">Year Mode</h1>
+
+<div id="reader"></div>
+<button id="scanBtn">Scan QR</button>
+
+<br>
+
+<button id="play" style="display:none;">Play Song</button>
 <button id="reveal" style="display:none;">Reveal</button>
 
 <h2 id="info"></h2>
 
+</div>
+
 <script src="https://sdk.scdn.co/spotify-player.js"></script>
+<script src="https://unpkg.com/html5-qrcode"></script>
 
 <script>
-  
-  const urlParams = new URLSearchParams(window.location.search);
-  const token = urlParams.get("access_token");
-  const year=urlParams.get("y");
-  if(!token){
-  location.href = "/login";
+
+/* =========================
+   TOKEN
+========================= */
+
+const token = localStorage.getItem("spotify_token");
+
+if(!token){
+  window.location.href="/";
 }
 
-const title=document.getElementById("title");
-const playBtn=document.getElementById("play");
-const revealBtn=document.getElementById("reveal");
-const info=document.getElementById("info");
+/* =========================
+   ELEMENTS
+========================= */
 
-title.innerText="Year "+year;
+const title = document.getElementById("title");
+const scanBtn = document.getElementById("scanBtn");
+const playBtn = document.getElementById("play");
+const revealBtn = document.getElementById("reveal");
+const info = document.getElementById("info");
 
 let player;
 let deviceId;
-let song;
+let currentSong;
+let selectedYear = null;
 
-/* PLAYER */
-window.onSpotifyWebPlaybackSDKReady=()=>{
- player=new Spotify.Player({
-  name:"Year Player",
-  getOAuthToken:cb=>cb(token)
- });
+/* =========================
+   SPOTIFY PLAYER
+========================= */
 
- player.addListener("ready",async({device_id})=>{
-  deviceId=device_id;
+window.onSpotifyWebPlaybackSDKReady = () => {
 
-  await fetch("https://api.spotify.com/v1/me/player",{
-   method:"PUT",
-   headers:{
-    "Content-Type":"application/json",
-    "Authorization":"Bearer "+token
-   },
-   body:JSON.stringify({device_ids:[device_id]})
+  player = new Spotify.Player({
+    name: "Year Mode Player",
+    getOAuthToken: cb => cb(token)
   });
- });
 
- player.connect();
+  player.addListener("ready", async ({ device_id }) => {
+
+    deviceId = device_id;
+
+    await fetch("https://api.spotify.com/v1/me/player",{
+      method:"PUT",
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization":"Bearer "+token
+      },
+      body:JSON.stringify({
+        device_ids:[device_id],
+        play:false
+      })
+    });
+
+  });
+
+  player.connect();
 };
 
-/* PLAY */
+/* =========================
+   QR SCANNER
+========================= */
+
+scanBtn.onclick = () => {
+
+  const qr = new Html5Qrcode("reader");
+
+  qr.start(
+    { facingMode:"environment" },
+    { fps:10, qrbox:250 },
+    async (decodedText) => {
+
+      selectedYear = decodedText.trim();
+      title.innerText = "Year " + selectedYear;
+
+      await qr.stop();
+
+      scanBtn.style.display="none";
+      playBtn.style.display="inline-block";
+    },
+    error => {}
+  );
+};
+
+/* =========================
+   PLAY
+========================= */
+
 playBtn.onclick = async () => {
 
   if(!deviceId){
-    alert("Player still loading — wait 1 second and try again");
+    alert("Player still loading");
     return;
   }
 
-  const res = await fetch(`/random-song-year?year=${year}`);
-  song = await res.json();
+  const res = await fetch(`/random-song-year?year=${selectedYear}`);
 
-  if(!song){
+  if(!res.ok){
     info.innerText="No song for this year.";
     return;
   }
 
-  const playRes = await fetch(
+  currentSong = await res.json();
+
+  await fetch(
     `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`,
     {
       method:"PUT",
@@ -100,22 +184,29 @@ playBtn.onclick = async () => {
         "Authorization":"Bearer "+token
       },
       body:JSON.stringify({
-        uris:[song.spotify_uri]
+        uris:[currentSong.spotify_uri]
       })
     }
   );
 
-  console.log("PLAY STATUS:",playRes.status);
-
-  revealBtn.style.display="inline";
+  info.innerText="Guess the year!";
+  revealBtn.style.display="inline-block";
 };
 
-/* REVEAL */
-revealBtn.onclick=()=>{
- info.innerHTML=`
- ${song.title} — ${song.artist}
- `;
+/* =========================
+   REVEAL
+========================= */
+
+revealBtn.onclick = () => {
+
+  if(!currentSong) return;
+
+  info.innerHTML = `
+    ${currentSong.title} — ${currentSong.artist}<br>
+    Year: ${currentSong.year}
+  `;
 };
+
 </script>
 
 </body>
