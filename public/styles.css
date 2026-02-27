@@ -211,6 +211,7 @@ button:hover {
 
   .row {
     flex-direction: column;
+    align-items: center;   /* THIS stops stretching */
     gap: 8px;
   }
 
@@ -219,13 +220,20 @@ button:hover {
     padding: 6px 10px;
   }
 
-  .mode-toggle {
-    width: calc(100% - 30px); /* fit mobile screens */
-    max-width: 180px;
-    height: 36px;
-    font-size: 12px;
+  .mode-toggle{
+    width:180px;        /* fixed width on mobile */
+    height:46px;
+    padding:6px;
+    font-size:13px;
+  }
+
+  .toggle-slider{
+    top:6px;
+    bottom:6px;
+    width:calc(50% - 6px);
   }
 }
+
 
 
 
