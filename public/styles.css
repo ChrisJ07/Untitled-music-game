@@ -190,7 +190,7 @@ button:hover {
 }
 
 .toggle-slider.qr{
-  left:calc(50% - 4px);
+  right:4px;
 }
 
 /* ================= MOBILE ================= */
@@ -221,5 +221,6 @@ button:hover {
     font-size: 12px;
   }
 }
+
 
 
