@@ -150,16 +150,16 @@ button:hover {
   top:15px;
   right:15px;
 
-  width:180px;              /* slightly wider */
-  height:52px;              /* taller */
+  width:180px;
+  height:52px;
   background:#1DB954;
   border-radius:60px;
 
   display:flex;
-  align-items:center;
+  align-items:center;      /* vertical center text */
   justify-content:space-between;
-  padding:0 20px;           /* spacing for text */
 
+  padding:0 20px;
   cursor:pointer;
   font-size:15px;
   color:white;
@@ -168,8 +168,9 @@ button:hover {
   overflow:hidden;
 }
 
-/* Text */
 .mode-toggle span{
+  flex:1;                  /* each side equal space */
+  text-align:center;       /* horizontal center */
   z-index:2;
   pointer-events:none;
   font-weight:600;
@@ -179,13 +180,15 @@ button:hover {
 .toggle-slider{
   position:absolute;
 
-  width:80px;               /* wider knob */
-  height:40px;              /* thicker knob */
+  width:80px;
+  height:40px;
 
   background:#169c46;
   border-radius:50px;
 
-  top:6px;                  /* vertically centered */
+  top:50%;                     /* center vertically */
+  transform:translateY(-50%);  /* perfect vertical center */
+
   transition:all 0.35s cubic-bezier(.4,0,.2,1);
 }
 
@@ -225,6 +228,7 @@ button:hover {
     font-size: 12px;
   }
 }
+
 
 
 
