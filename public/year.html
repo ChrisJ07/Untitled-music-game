@@ -9,10 +9,11 @@
 
 <body>
 
-<!-- MODE SWITCH TOP RIGHT -->
-<div class="mode-switch">
-  <button onclick="window.location.href='/'">Normal</button>
-  <button onclick="window.location.href='/year'">Year</button>
+<!-- MODE SLIDER -->
+<div class="mode-toggle" onclick="window.location.href='/'">
+  <div class="toggle-slider year"></div>
+  <span>Normal</span>
+  <span>Year</span>
 </div>
 
 <!-- CATEGORY SELECTOR -->
@@ -27,16 +28,9 @@
 
 <div id="reader"></div>
 
-
 <div class="row">
-  <button id="play" style="display:none;">Play</button>
-  <button id="stopBtn" style="display:none;">Stop</button>
   <button id="reveal" style="display:none;">Reveal</button>
-</div>
-  
-<div class="row">
-  <button id="scanBtn">Scan QR</button>
-  <button id="nextScanBtn" style="display:none;">Next Scan</button>
+  <button id="nextSong" style="display:none;">Next Song</button>
 </div>
 
 <h2 id="info"></h2>
@@ -50,19 +44,17 @@
 const token = localStorage.getItem("spotify_token");
 if(!token) window.location.href="/";
 
-const scanBtn = document.getElementById("scanBtn");
-const nextScanBtn = document.getElementById("nextScanBtn");
-const playBtn = document.getElementById("play");
-const stopBtn = document.getElementById("stopBtn");
 const revealBtn = document.getElementById("reveal");
+const nextBtn = document.getElementById("nextSong");
 const info = document.getElementById("info");
 const categoryBtn = document.getElementById("categoryBtn");
 const categoryList = document.getElementById("categoryList");
 const dropdown = document.querySelector(".category-dropdown");
 
-let player, deviceId, currentSong, selectedYear=null, stopTimer=null, qrScanner;
+let player, deviceId, currentSong, stopTimer, qrScanner;
 
-/* CATEGORY LOAD */
+/* ================= CATEGORIES ================= */
+
 async function loadCategories(){
   const res = await fetch("/categories");
   const cats = await res.json();
@@ -73,17 +65,20 @@ async function loadCategories(){
     </label>
   `).join("");
 }
+
 function getCheckedCategories(){
   return [...document.querySelectorAll("#categoryList input:checked")]
     .map(x=>x.value).join(",");
 }
+
 categoryBtn.onclick=()=>dropdown.classList.toggle("show");
 document.addEventListener("click",(e)=>{
   if(!dropdown.contains(e.target)) dropdown.classList.remove("show");
 });
 loadCategories();
 
-/* PLAYER */
+/* ================= SPOTIFY ================= */
+
 window.onSpotifyWebPlaybackSDKReady=()=>{
   player=new Spotify.Player({
     name:"Year Mode Player",
@@ -105,31 +100,8 @@ window.onSpotifyWebPlaybackSDKReady=()=>{
   player.connect();
 };
 
-/* QR */
-function startScanner(){
-  qrScanner=new Html5Qrcode("reader");
-  qrScanner.start(
-    {facingMode:"environment"},
-    {fps:10,qrbox:250},
-    async(decodedText)=>{
-      selectedYear=decodedText.trim();
-      await qrScanner.stop();
-      scanBtn.style.display="none";
-      nextScanBtn.style.display="inline-block";
-      playBtn.style.display="inline-block";
-    },
-    error=>{}
-  );
-}
-scanBtn.onclick=startScanner;
-nextScanBtn.onclick=()=>{
-  info.innerText="";
-  revealBtn.style.display="none";
-  playBtn.style.display="none";
-  startScanner();
-};
+/* ================= AUTO STOP TIMER ================= */
 
-/* PLAY */
 function startTimer(){
   clearTimeout(stopTimer);
   stopTimer=setTimeout(async()=>{
@@ -140,41 +112,58 @@ function startTimer(){
   },30000);
 }
 
-playBtn.onclick=async()=>{
-  const cats=getCheckedCategories();
-  const res=await fetch(`/random-song-year?year=${selectedYear}&cats=${cats}`);
-  if(!res.ok){info.innerText="No songs found.";return;}
-  currentSong=await res.json();
+/* ================= SCAN + AUTO PLAY ================= */
 
-  await fetch(
-    `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`,
-    {
-      method:"PUT",
-      headers:{
-        "Content-Type":"application/json",
-        "Authorization":"Bearer "+token
-      },
-      body:JSON.stringify({
-        uris:[currentSong.spotify_uri],
-        position_ms:30000
-      })
-    }
+function startScanner(){
+
+  qrScanner=new Html5Qrcode("reader");
+
+  qrScanner.start(
+    {facingMode:"environment"},
+    {fps:10,qrbox:250},
+    async(decodedText)=>{
+
+      const year=decodedText.trim();
+      await qrScanner.stop();
+
+      const cats=getCheckedCategories();
+      const res=await fetch(`/random-song-year?year=${year}&cats=${cats}`);
+
+      if(!res.ok){
+        info.innerText="No songs found.";
+        return;
+      }
+
+      currentSong=await res.json();
+
+      await fetch(
+        `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`,
+        {
+          method:"PUT",
+          headers:{
+            "Content-Type":"application/json",
+            "Authorization":"Bearer "+token
+          },
+          body:JSON.stringify({
+            uris:[currentSong.spotify_uri],
+            position_ms:30000
+          })
+        }
+      );
+
+      startTimer();
+
+      revealBtn.style.display="inline-block";
+      nextBtn.style.display="inline-block";
+      info.innerText="Guess the year!";
+    },
+    error=>{}
   );
+}
 
-  startTimer();
-  stopBtn.style.display="inline-block";
-  revealBtn.style.display="inline-block";
-  info.innerText="Guess the year!";
-};
+startScanner();
 
-stopBtn.onclick=async()=>{
-  clearTimeout(stopTimer);
-  await fetch(
-    `https://api.spotify.com/v1/me/player/pause?device_id=${deviceId}`,
-    {method:"PUT",headers:{Authorization:"Bearer "+token}}
-  );
-  info.innerText="Paused!";
-};
+/* ================= REVEAL ================= */
 
 revealBtn.onclick=()=>{
   if(!currentSong) return;
@@ -183,9 +172,25 @@ revealBtn.onclick=()=>{
     Year: ${currentSong.year}
   `;
 };
+
+/* ================= NEXT SONG ================= */
+
+nextBtn.onclick=async()=>{
+
+  clearTimeout(stopTimer);
+
+  await fetch(
+    `https://api.spotify.com/v1/me/player/pause?device_id=${deviceId}`,
+    {method:"PUT",headers:{Authorization:"Bearer "+token}}
+  );
+
+  revealBtn.style.display="none";
+  nextBtn.style.display="none";
+  info.innerText="";
+
+  startScanner();
+};
 </script>
+
 </body>
 </html>
-
-
-
