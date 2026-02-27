@@ -195,7 +195,7 @@ button:hover {
 }
 
 .toggle-slider.year{
-  left:50%;
+  right:4px;
 }
 /* ================= MOBILE ================= */
 @media (max-width: 600px) {
@@ -225,6 +225,7 @@ button:hover {
     font-size: 12px;
   }
 }
+
 
 
 
