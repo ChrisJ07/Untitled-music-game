@@ -10,9 +10,10 @@
 <body>
 
 <!-- MODE SWITCH TOP RIGHT -->
-<div class="mode-switch">
-  <button onclick="window.location.href='/'">Normal</button>
-  <button onclick="window.location.href='/year'">Year</button>
+<div class="mode-toggle" onclick="window.location.href='/year'">
+  <div class="toggle-slider normal"></div>
+  <span>Normal</span>
+  <span>Year</span>
 </div>
   
 <div class="category-dropdown">
@@ -247,6 +248,7 @@ playBtn.onclick = async () => {
 </div>
 </body>
 </html>
+
 
 
 
