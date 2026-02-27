@@ -156,10 +156,10 @@ button:hover {
   border-radius:60px;
 
   display:flex;
-  align-items:center;      /* vertical center text */
+  align-items:center;
   justify-content:space-between;
 
-  padding:0 20px;
+  padding:0;               /* REMOVE side padding */
   cursor:pointer;
   font-size:15px;
   color:white;
@@ -169,8 +169,8 @@ button:hover {
 }
 
 .mode-toggle span{
-  flex:1;                  /* each side equal space */
-  text-align:center;       /* horizontal center */
+  flex:1;                  /* exactly half each */
+  text-align:center;
   z-index:2;
   pointer-events:none;
   font-weight:600;
@@ -226,6 +226,7 @@ button:hover {
     font-size: 12px;
   }
 }
+
 
 
 
