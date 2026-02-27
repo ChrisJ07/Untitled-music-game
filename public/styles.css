@@ -222,7 +222,7 @@ button:hover {
 
   .mode-toggle{
     width:180px;        /* fixed width on mobile */
-    height:46px;
+    height:48px;
     padding:6px;
     font-size:13px;
   }
@@ -233,6 +233,7 @@ button:hover {
     width:calc(50% - 6px);
   }
 }
+
 
 
 
