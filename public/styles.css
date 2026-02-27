@@ -240,7 +240,7 @@ button:hover {
   padding:0 12px;
   cursor:pointer;
   font-size:14px;
-  color:#1C9647;
+  color:white;
   z-index:1000;
 }
 
@@ -264,6 +264,7 @@ button:hover {
 .toggle-slider.normal{
   left:3px;
 }
+
 
 
 
