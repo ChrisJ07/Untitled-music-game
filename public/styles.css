@@ -138,44 +138,59 @@ button:hover {
   transform: translateY(0);
 }
 
-/* MODE TOGGLE SLIDER */
+/* ================= MODE TOGGLE ================= */
+
 .mode-toggle{
   position:absolute;
   top:15px;
   right:15px;
-  width:140px;
-  height:40px;
-  background:#1DB954;
-  border-radius:40px;
+  width:240px;              /* extended width */
+  height:48px;
+  background: rgba(255,255,255,0.08); /* dynamic glass look */
+  backdrop-filter: blur(8px);
+  border-radius:60px;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:0 12px;
+  padding:0 18px;
   cursor:pointer;
-  font-size:14px;
+  font-size:15px;
   color:white;
-  z-index:1000;
+  z-index:2000;
+  user-select:none;
+  overflow:hidden;
+  transition:all 0.3s ease;
 }
 
+/* Text */
 .mode-toggle span{
   z-index:2;
+  pointer-events:none;
+  font-weight:600;
+  white-space:nowrap;       /* FORCE single line */
+  flex:1;
+  text-align:center;        /* PERFECT CENTERING */
 }
 
+/* Sliding indicator */
 .toggle-slider{
   position:absolute;
-  width:70px;
-  height:34px;
-  background:white;
-  border-radius:40px;
-  transition:0.3s;
+  width:50%;
+  height:40px;
+  background: rgba(29,185,84,0.85);
+  border-radius:50px;
+  top:4px;
+  left:4px;
+  transition:all 0.35s cubic-bezier(.4,0,.2,1);
 }
 
-.toggle-slider.year{
-  right:3px;
+/* Positions */
+.toggle-slider.app{
+  left:4px;
 }
 
-.toggle-slider.normal{
-  left:3px;
+.toggle-slider.qr{
+  left:calc(50% - 4px);
 }
 
 /* ================= MOBILE ================= */
@@ -206,4 +221,5 @@ button:hover {
     font-size: 12px;
   }
 }
+
 
