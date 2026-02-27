@@ -26,9 +26,13 @@
   
   
   <button id="login">Login with Spotify</button>
-  <button id="play" style="display:none;">Play Random Song</button>
-  <button id="stopBtn" style="display:none;">Stop</button>
-  <button id="reveal" style="display:none;">Reveal</button>
+  <div class="row">
+    <button id="play" style="display:none;">Play Random Song</button>
+    <button id="stopBtn" style="display:none;">Stop</button>
+  </div>
+  <div class="row reveal-row">
+    <button id="reveal" style="display:none;">Reveal</button>
+  </div>
   
   <div id="player"></div>
   <h2 id="info"></h2>
@@ -248,6 +252,7 @@ playBtn.onclick = async () => {
 </div>
 </body>
 </html>
+
 
 
 
