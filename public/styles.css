@@ -31,7 +31,7 @@ body {
   width: 600px;
   max-width: 90%;
   backdrop-filter: blur(10px);
-  white-space: normal;
+  white-space: wrap;
 }
 
 
@@ -49,14 +49,14 @@ h1 {
 .song-title {
   font-size: 22px;
   font-weight: bold;
-  white-space: normal;
+  white-space: wrap;
 }
 
 .artist-name {
   font-size: 18px;
   opacity: 0.8;
   margin-top: 5px;
-  white-space: normal;
+  white-space: wrap;
 }
 
 /* ================= BUTTONS ================= */
@@ -247,6 +247,7 @@ button:hover {
     width:calc(50% - 6px);
   }
 }
+
 
 
 
