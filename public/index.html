@@ -30,6 +30,9 @@
 <script>
   const urlParams = new URLSearchParams(window.location.search);
   const token = urlParams.get("access_token");
+  if (token) {
+  localStorage.setItem("spotify_token", token);
+}
   
   const loginBtn = document.getElementById("login");
   const checked = [...document.querySelectorAll("#categories input:checked")]
@@ -237,3 +240,4 @@ playBtn.onclick = async () => {
 </div>
 </body>
 </html>
+
