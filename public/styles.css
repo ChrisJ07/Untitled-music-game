@@ -3,7 +3,7 @@
   padding: 0;
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent; /* remove blue tap highlight */
-  white-space: nowrap;
+
 }
 
 button:focus {
@@ -48,7 +48,7 @@ h1 {
 .song-title,
 .artist-name {
   white-space: normal !important;   /* override global nowrap */
-  overflow-wrap: break-word;        /* break long words */
+  overflow-wrap: anywhere;        /* break long words */
   word-break: break-word;
   text-align: center;
 }
@@ -244,6 +244,7 @@ button:hover {
     width:calc(50% - 6px);
   }
 }
+
 
 
 
