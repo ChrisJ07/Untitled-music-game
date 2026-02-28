@@ -94,17 +94,14 @@ button:hover {
 
 }
 
-.top-bar {
+/* ================= CATEGORY DROPDOWN ================= */
+.category-dropdown {
+  user-select: none;
   position: absolute;
   top: 15px;
   left: 15px;
-  right: 15px;
-
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  z-index: 1000;
 }
-/* ================= CATEGORY DROPDOWN ================= */
 
 #categoryBtn {
   background: rgba(0,0,0,0.25);
@@ -162,6 +159,9 @@ button:hover {
 /* ================= MODE TOGGLE ================= */
 
 .mode-toggle{
+  position:absolute;
+  top:15px;
+  right:15px;
 
   width:180px;
   height:52px;
@@ -250,8 +250,6 @@ button:hover {
     width:calc(50% - 6px);
   }
 }
-
-
 
 
 
