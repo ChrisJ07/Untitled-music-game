@@ -10,6 +10,11 @@ button:focus {
   outline: none;
 }
 
+.dropdown-content input[type="checkbox"] {
+  accent-color: #1DB954; /* Spotify green */
+  cursor: pointer;
+}
+
 body {
   user-select: none;
   font-family: 'Montserrat', sans-serif;
@@ -244,6 +249,7 @@ button:hover {
     width:calc(50% - 6px);
   }
 }
+
 
 
 
